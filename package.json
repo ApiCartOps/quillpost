@@ -3,10 +3,19 @@
   "version": "0.1.0",
   "description": "CLI and MCP server built on LinkedIn's official REST API (OAuth 2.0)",
   "type": "module",
-  "bin": { "linkedin-official": "src/cli.js" },
-  "engines": { "node": ">=20" },
+  "bin": {
+    "linkedin-official": "src/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "zod": "^3.23.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ApiCartOps/linkedin-official.git"
+  },
+  "license": "MIT"
 }
