@@ -39,8 +39,11 @@ LinkedIn retires old API versions. Pass a current one (format `YYYYMM`): `quillp
 ### `401`
 The token is invalid or expired. Run `quillpost login`.
 
-### `403` when posting, commenting or uploading
-The app lacks permission. Confirm **Share on LinkedIn** is on your app and that you signed in after adding it (run `login` again). Some document or image features can depend on the account; open an issue with the exact message.
+### `403 ... partnerApiSocialActions` when commenting or reacting (or with `--comment`)
+Expected on a self-serve app. LinkedIn only allows commenting and reactions through the Community Management API, which it grants to approved partners; **Share on LinkedIn** does not include it. A post published with `--comment` still goes live, and the comment text is printed (`commentToPaste`) so you can paste it on LinkedIn.
+
+### `403` when posting or uploading
+The app lacks permission. Confirm **Share on LinkedIn** is on your app and that you signed in after adding it (run `login` again). Some image or document features can depend on the account; open an issue with the exact message.
 
 ### `422`
 LinkedIn rejected the content. The message names the field. Common causes: duplicate content posted twice in a row, text too long, or an invalid link.
@@ -49,7 +52,7 @@ LinkedIn rejected the content. The message names the field. Common causes: dupli
 Quillpost's own checks. Read the listed reasons; see [Post styles: Checks](post-styles.md#checks). Markdown problems can be fixed with `--plain`.
 
 ### Post published but the first comment failed
-The post is live; the response includes `commentError`. Add the comment yourself with `quillpost comment last "..."`.
+The post is live; the response includes `commentError` and `commentToPaste`. On a self-serve app this is expected (see above): paste the text as the first comment on LinkedIn.
 
 ## Scheduling
 

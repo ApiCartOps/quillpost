@@ -60,7 +60,7 @@ quillpost preview --style=howto --hook="How to ..." --item="Step one" --item="St
 quillpost post --style=howto --hook="How to ..." --item="Step one" --item="Step two" --tag=HowTo
 ```
 
-Your post is live on your profile. The command prints its URL and an id; `quillpost comment last "..."` and `quillpost delete last` act on the most recent one.
+Your post is live on your profile. The command prints its URL and an id; `quillpost posts` lists what you published and `quillpost delete last` removes the most recent one.
 
 ## 5. Optional: connect an AI agent
 
@@ -73,5 +73,5 @@ Restart the agent, then ask it to write a post. It will show you a preview and w
 ## Next
 
 - [Post styles](post-styles.md)
-- [Rich posts](rich-posts.md): images, documents, links, first comment
+- [Rich posts](rich-posts.md): images, documents, link cards, and how first comments work
 - [Scheduling](scheduling.md)

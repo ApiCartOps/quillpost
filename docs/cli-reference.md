@@ -32,8 +32,8 @@ Run `quillpost` with no arguments for the built-in help. Without `npm link`, use
 | `--tag=` | Repeat for each hashtag; or `--tags=a,b,c` |
 | `--plain` | Convert markdown to LinkedIn plain text |
 | `--visibility=` | `PUBLIC` (default), `CONNECTIONS`, `LOGGED_IN` |
-| `--comment=TEXT` | First comment, posted right after publishing |
-| `--links-to-comment` | With `--plain`, post removed markdown links as the first comment |
+| `--comment=TEXT` | First comment. **Partner-only on LinkedIn's side**: on a self-serve app it is refused, the post still publishes, and the text is printed for you to paste |
+| `--links-to-comment` | With `--plain`, use the removed markdown links as the first comment text (same caveat) |
 | `--link=URL` `--link-title=` `--link-desc=` | Link with a preview card |
 | `--image=PATH` `--alt=` | Repeat both for each image, same order |
 | `--document=PATH` `--doc-title=` | PDF, PowerPoint or Word as a carousel |
@@ -72,8 +72,8 @@ See [Scheduling](scheduling.md).
 | Command | Description |
 |---|---|
 | `posts` | Posts published through Quillpost, with ids and URLs |
-| `comment <post> <text>` | Comment on your post |
-| `react <post> [--type=LIKE]` | `LIKE`, `PRAISE`, `APPRECIATION`, `EMPATHY`, `INTEREST`, `ENTERTAINMENT` |
+| `comment <post> <text>` | Comment on your post. **Needs Community Management API access**; fails with a clear message on self-serve apps |
+| `react <post> [--type=LIKE]` | `LIKE`, `PRAISE`, `APPRECIATION`, `EMPATHY`, `INTEREST`, `ENTERTAINMENT`. Same restriction as comments (untested, expected to fail the same way) |
 | `delete <post>` | Delete a post. Irreversible |
 
 `<post>` is `last`, a history id from `posts`, or a full URN such as `urn:li:share:123`.

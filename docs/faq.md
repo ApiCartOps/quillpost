@@ -10,7 +10,10 @@ No. Everything goes through `api.linkedin.com` with a token you grant through Li
 Only the account that signed in. Quillpost cannot post as a company Page or as another person.
 
 ### Can it read my feed, search, or show analytics?
-No. Those need partner-level API access that LinkedIn grants to approved businesses. The self-serve products cover posting, media, comments, reactions and deleting.
+No. Those need partner-level API access that LinkedIn grants to approved businesses. The self-serve products cover posting text, images, documents and link cards, and deleting.
+
+### Can it comment or react?
+Not on a self-serve app. LinkedIn restricts commenting (and, we expect, reactions) to approved partners through its Community Management API; the request comes back `403 ACCESS_DENIED`. `--comment` therefore still publishes your post, then prints the comment text for you to paste on LinkedIn. If you have been granted that API access, `quillpost comment` and `quillpost react` will work.
 
 ### Why do I need to create a LinkedIn app?
 LinkedIn requires every app that posts for a member to be registered. Your own app gives you your own client id and secret, so there is no shared key and no hosted service holding your login.

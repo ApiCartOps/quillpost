@@ -49,8 +49,8 @@ This is a guardrail, not a sandbox: it relies on the agent honoring the instruct
 | `quillpost_styles` | no | List styles, or one with its example text |
 | `quillpost_preview` | no | Build and check a post; text, stats, feed cut, warnings, errors |
 | `quillpost_post` | with `approved` | Publish text, a style post, link, images or a document |
-| `quillpost_comment` | with `approved` | Comment on one of your posts |
-| `quillpost_react` | with `approved` | React to a post |
+| `quillpost_comment` | with `approved` | Comment on one of your posts. **Partner-only on LinkedIn's side**; fails with 403 on self-serve apps |
+| `quillpost_react` | with `approved` | React to a post. Same restriction (expected to fail the same way) |
 | `quillpost_delete` | with `approved` | Delete a post |
 | `quillpost_history` | no | Posts published through Quillpost |
 | `quillpost_draft_save` / `_list` / `_get` / `_delete` | no | Manage local drafts |
@@ -61,6 +61,8 @@ This is a guardrail, not a sandbox: it relies on the agent honoring the instruct
 
 `quillpost_post` and `quillpost_preview` take the same fields: `text`, or `style` with `hook`, `intro`, `items`, `takeaway`, `cta`, `tags`; plus `plain`, `visibility`, `first_comment`, `link`, `images`, `document`, `force`.
 
+**First comments and partner access.** `first_comment` (like `quillpost_comment`) uses LinkedIn's commenting API, which only approved partners can use. On a self-serve app LinkedIn refuses it with 403. The post still publishes, and the result carries `commentError` and `commentToPaste`; the server instructions tell the agent to hand that text to you to paste on LinkedIn and not to retry.
+
 A `post` argument means `"last"`, a history id, or a URN.
 
 ## Prompts and resources
@@ -70,4 +72,4 @@ A `post` argument means `"last"`, a history id, or a URN.
 
 ## Claude Code skill and commands
 
-The `.claude/` folder in this repo has a skill and slash commands that enforce the same rules: `/quillpost-post`, `/quillpost-preview`, `/quillpost-comment`, `/quillpost-delete`. The sources are in `content/`; copy them to `~/.claude/` to use them in every project.
+The `.claude/` folder in this repo has a skill and slash commands that enforce the same rules: `/quillpost-post`, `/quillpost-preview`, `/quillpost-delete`. The sources are in `content/`; copy them to `~/.claude/` to use them in every project.

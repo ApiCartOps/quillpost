@@ -25,8 +25,9 @@ Post options
   --text-file=PATH|-                Read the post text from a file or stdin
   --plain                           Convert markdown to LinkedIn plain text
   --visibility=PUBLIC|CONNECTIONS|LOGGED_IN
-  --comment=TEXT                    First comment, posted right after publishing
-  --links-to-comment                With --plain, move markdown links into the first comment
+  --comment=TEXT                    First comment. Needs partner API access; if LinkedIn refuses,
+                                    the post still publishes and the text is printed for you to paste
+  --links-to-comment                With --plain, move markdown links into the first comment (same caveat)
   --link=URL [--link-title= --link-desc=]
   --image=PATH (repeat) [--alt= (repeat, same order)]
   --document=PATH [--doc-title=]
@@ -42,6 +43,8 @@ After publishing
   comment <post> <text>             <post> = last, a history id, or a urn
   react <post> [--type=LIKE|PRAISE|APPRECIATION|EMPATHY|INTEREST|ENTERTAINMENT]
   delete <post>
+  Note: comments and reactions need LinkedIn's partner-only Community Management API.
+  On a self-serve app they fail with 403; post the comment on LinkedIn instead.
 
   mcp                               Run as an MCP server over stdio
   config                            Print an MCP client config snippet`;
@@ -96,7 +99,14 @@ function printPreview(p) {
   for (const w of p.warnings ?? []) console.log(`! ${w}`);
 }
 
-const show = (r) => (v.json ? out(r) : r.published === false || r.text ? printPreview(r) : out(r));
+const show = (r) => {
+  if (v.json) return out(r);
+  if (r.published === false || r.text) return printPreview(r);
+  out(r);
+  if (r.commentToPaste) {
+    console.error(`\nThe post is live, but the first comment was NOT posted:\n${r.commentError}\n\nPaste this as the first comment yourself:\n${"─".repeat(44)}\n${r.commentToPaste}\n${"─".repeat(44)}`);
+  }
+};
 
 try {
   switch (cmd) {

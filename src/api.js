@@ -80,12 +80,28 @@ export async function deletePost(urn) {
   return { deleted: urn };
 }
 
+/**
+ * LinkedIn gates commenting and reactions behind its Community Management API (partner approval).
+ * The self-serve "Share on LinkedIn" product returns 403 ACCESS_DENIED for them. Turn that into a clear message.
+ */
+export const PARTNER_ONLY = "PARTNER_ONLY";
+function partnerOnly(e, what) {
+  if (!/\b403\b/.test(e.message) || !/ACCESS_DENIED|partnerApi/i.test(e.message)) return e;
+  const err = new Error(
+    `LinkedIn refused ${what}: it needs the Community Management API, which LinkedIn grants to approved partners, ` +
+    `not the self-serve "Share on LinkedIn" product. Do this one on LinkedIn instead.`);
+  err.code = PARTNER_ONLY;
+  return err;
+}
+
 export async function comment(urn, text) {
-  const { headers, data } = await call(`/rest/socialActions/${encodeURIComponent(urn)}/comments`, {
-    method: "POST",
-    body: { actor: await personUrn(), object: urn, message: { text } },
-  });
-  return { commentUrn: headers.get("x-restli-id") ?? data?.commentUrn ?? data?.id ?? null };
+  try {
+    const { headers, data } = await call(`/rest/socialActions/${encodeURIComponent(urn)}/comments`, {
+      method: "POST",
+      body: { actor: await personUrn(), object: urn, message: { text } },
+    });
+    return { commentUrn: headers.get("x-restli-id") ?? data?.commentUrn ?? data?.id ?? null };
+  } catch (e) { throw partnerOnly(e, "the comment"); }
 }
 
 export const REACTIONS = ["LIKE", "PRAISE", "APPRECIATION", "EMPATHY", "INTEREST", "ENTERTAINMENT"];
@@ -93,8 +109,10 @@ export const REACTIONS = ["LIKE", "PRAISE", "APPRECIATION", "EMPATHY", "INTEREST
 export async function react(urn, type = "LIKE") {
   if (!REACTIONS.includes(type)) throw new Error(`Unknown reaction "${type}". Use one of: ${REACTIONS.join(", ")}`);
   const actor = await personUrn();
-  await call(`/rest/reactions?actor=${encodeURIComponent(actor)}`, {
-    method: "POST", body: { root: urn, reactionType: type },
-  });
+  try {
+    await call(`/rest/reactions?actor=${encodeURIComponent(actor)}`, {
+      method: "POST", body: { root: urn, reactionType: type },
+    });
+  } catch (e) { throw partnerOnly(e, "the reaction"); }
   return { reacted: type, post: urn };
 }

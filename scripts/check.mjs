@@ -49,6 +49,7 @@ step("compose, validate, normalize, lint");
 // ---------- 3. fake LinkedIn API ----------
 const calls = [];
 let seq = 100;
+let denyPartner = false; // when true, comments and reactions are refused like LinkedIn does for self-serve apps
 const server = http.createServer((req, res) => {
   const chunks = [];
   req.on("data", (c) => chunks.push(c));
@@ -61,6 +62,9 @@ const server = http.createServer((req, res) => {
     const json = (code, o, h = {}) => { res.writeHead(code, { "content-type": "application/json", ...h }); res.end(o ? JSON.stringify(o) : ""); };
     const port = server.address().port;
     if (req.headers.authorization !== "Bearer tok") return json(401, { message: "bad token" });
+    if (denyPartner && (url.pathname.includes("/comments") || url.pathname === "/rest/reactions")) {
+      return json(403, { status: 403, serviceErrorCode: 100, code: "ACCESS_DENIED", message: "Not enough permissions to access: partnerApiSocialActions.CREATE.20260901" });
+    }
     if (url.pathname === "/v2/userinfo") return json(200, { sub: "abc", name: "Test User" });
     if (url.pathname === "/rest/posts" && req.method === "POST") return json(201, null, { "x-restli-id": `urn:li:share:${++seq}` });
     if (url.pathname.startsWith("/rest/posts/") && req.method === "DELETE") return json(204);
@@ -160,6 +164,24 @@ try {
   assert.equal(calls.at(-1).method, "DELETE");
   r = await run(["comment", "nonexistent", "x"]); assert.equal(r.code, 1);
   step("posts, comment, react, delete resolve 'last' and ids");
+
+  // comments and reactions are partner-only on self-serve apps: degrade gracefully
+  denyPartner = true;
+  const pBefore = posts().length;
+  r = await run(["post", "Post whose comment is refused. ".repeat(6) + "\n\n#a #b #c", "--comment=Sources: https://s.example/1"]);
+  assert.equal(r.code, 0, "a refused comment must not fail the publish");
+  const pj = JSON.parse(r.out);
+  assert.equal(pj.published, true); assert.equal(posts().length, pBefore + 1, "the post is still published");
+  assert.match(pj.commentError, /Community Management API/); assert.equal(pj.commentToPaste, "Sources: https://s.example/1");
+  assert.match(r.err, /Paste this as the first comment/); assert.match(r.err, /Sources: https:\/\/s\.example\/1/);
+  r = await run(["preview", "Preview with comment. ".repeat(8) + "\n\n#a #b #c", "--comment=x"]);
+  assert.match(r.out, /partner-only/, "preview warns up front that the first comment may fail");
+  r = await run(["comment", "last", "hello"]);
+  assert.equal(r.code, 1); assert.match(r.err, /Community Management API/); assert.match(r.err, /on LinkedIn instead/);
+  r = await run(["react", "last"]);
+  assert.equal(r.code, 1); assert.match(r.err, /Community Management API/);
+  denyPartner = false;
+  step("refused comment/reaction (403 ACCESS_DENIED): post still publishes, comment text is handed back, clear errors");
 
   // drafts
   const before = posts().length;

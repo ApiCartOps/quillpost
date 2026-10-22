@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quillpost launch carousel</title>
+<style>
+  @page { size: 1080px 1350px; margin: 0; }
+  :root { --bg:#0f172a; --card:#1e293b; --teal:#2dd4bf; --text:#f8fafc; --muted:#94a3b8; --dim:#64748b; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); }
+  body { font-family: "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif; color: var(--text); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide { width: 1080px; height: 1350px; padding: 80px 96px 76px; display: flex; flex-direction: column; position: relative; background: var(--bg); break-after: page; overflow: hidden; }
+  .slide:last-child { break-after: auto; }
+  @media screen { .slide { display: none; } .slide:target { display: flex; } body:not(:has(.slide:target)) #s1 { display: flex; } }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: var(--teal); }
+  .top { display: flex; align-items: center; gap: 20px; margin-bottom: 36px; }
+  .top svg { width: 64px; height: 64px; }
+  .brand { font-size: 34px; font-weight: 700; letter-spacing: .2px; }
+  .count { margin-left: auto; font-size: 26px; color: var(--dim); }
+  .kicker { color: var(--teal); font-size: 28px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+  h1 { font-size: 132px; line-height: 1.02; font-weight: 800; letter-spacing: -2px; }
+  h2 { font-size: 72px; line-height: 1.08; font-weight: 800; letter-spacing: -1px; margin-bottom: 32px; }
+  .lead { font-size: 40px; line-height: 1.35; color: var(--muted); }
+  .lead b { color: var(--text); font-weight: 600; }
+  .list { display: flex; flex-direction: column; gap: 16px; margin-top: 4px; }
+  .row { background: var(--card); border-radius: 22px; padding: 22px 32px; display: flex; gap: 24px; align-items: baseline; }
+  .row .k { color: var(--teal); font-size: 33px; font-weight: 700; min-width: 262px; font-family: Consolas, "Cascadia Mono", monospace; }
+  .row .v { font-size: 31px; color: var(--muted); line-height: 1.28; }
+  .row.big .k { min-width: 0; }
+  .pill { display: inline-block; background: var(--card); color: var(--teal); border-radius: 999px; padding: 14px 30px; font-size: 30px; font-weight: 600; margin: 0 14px 14px 0; }
+  .bad { background: #1b1f3a; border: 2px solid #334155; border-radius: 24px; padding: 26px 36px; font-family: Consolas, "Cascadia Mono", monospace; font-size: 33px; line-height: 1.4; color: #cbd5e1; }
+  .bad .x { color: #f87171; }
+  .good { background: #0b2a2a; border: 2px solid #115e59; border-radius: 24px; padding: 26px 36px; font-family: Consolas, "Cascadia Mono", monospace; font-size: 33px; line-height: 1.4; color: #e2e8f0; margin-top: 20px; }
+  .tag { font-family: "Segoe UI", sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 10px; }
+  .tag.r { color: #f87171; } .tag.g { color: var(--teal); }
+  .flow { display: flex; flex-direction: column; gap: 18px; margin-top: 4px; }
+  .step { display: flex; align-items: center; gap: 26px; background: var(--card); border-radius: 24px; padding: 24px 32px; }
+  .n { width: 68px; height: 68px; border-radius: 50%; background: var(--teal); color: var(--bg); font-size: 36px; font-weight: 800; display: grid; place-items: center; flex: none; }
+  .step .t { font-size: 36px; font-weight: 600; } .step .d { font-size: 28px; color: var(--muted); margin-top: 4px; line-height: 1.3; }
+  code { font-family: Consolas, "Cascadia Mono", monospace; color: var(--teal); }
+  .term { background: #020617; border: 2px solid #1e293b; border-radius: 26px; padding: 36px 44px; font-family: Consolas, "Cascadia Mono", monospace; font-size: 31px; line-height: 1.6; color: #e2e8f0; margin-top: 4px; white-space: pre; }
+  .term .c { color: var(--dim); }
+  .foot { margin-top: auto; padding-top: 24px; font-size: 26px; color: var(--dim); display: flex; justify-content: space-between; }
+  .url { font-size: 52px; font-weight: 700; color: var(--teal); margin: 30px 0 10px; }
+</style>
+</head>
+<body>
+
+<!-- 1 title -->
+<section class="slide" id="s1">
+  <div class="top"><svg viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="#1e293b"/><path d="M96 22 C66 26 40 52 36 92 C52 82 65 74 76 63 C88 51 94 38 96 22 Z" fill="#f8fafc"/><path d="M40 94 L88 36" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M33 100 L66 106 L98 92" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="66" cy="106" r="5.5" fill="#94a3b8"/><circle cx="98" cy="92" r="5.5" fill="#94a3b8"/><circle cx="33" cy="100" r="8" fill="#2dd4bf"/></svg><span class="brand">Quillpost</span><span class="count">1 / 7</span></div>
+  <div style="margin-top:150px"><div class="kicker">Introducing</div><h1>Quillpost</h1></div>
+  <p class="lead" style="margin-top:56px">Write, check and publish <b>LinkedIn posts</b> from your terminal or your AI agent.</p>
+  <div style="margin-top:64px"><span class="pill">Official LinkedIn API</span><span class="pill">CLI</span><span class="pill">MCP server</span><span class="pill">MIT</span></div>
+  <div class="foot"><span>Swipe to see how it works →</span><span>Not affiliated with LinkedIn</span></div>
+  <div class="bar"></div>
+</section>
+
+<!-- 2 problem -->
+<section class="slide" id="s2">
+  <div class="top"><span class="brand">Quillpost</span><span class="count">2 / 7</span></div>
+  <div class="kicker">The problem</div>
+  <h2>LinkedIn shows plain text. Only.</h2>
+  <div class="bad"><span class="tag r">What an AI draft looks like</span>## Big news<br><span class="x">**</span>We launched<span class="x">**</span> a thing<br>- [read more](https://...)</div>
+  <div class="good"><span class="tag g">What readers should see</span>We launched a thing.<br>→ Clear, plain lines<br>→ Link in the first comment</div>
+  <p class="lead" style="margin-top:44px">The feed also cuts a post after about <b>210 characters</b>, and links in the body can <b>reduce reach</b>.</p>
+  <div class="foot"><span>github.com/ApiCartOps/quillpost</span></div>
+  <div class="bar"></div>
+</section>
+
+<!-- 3 styles -->
+<section class="slide" id="s3">
+  <div class="top"><span class="brand">Quillpost</span><span class="count">3 / 7</span></div>
+  <div class="kicker">Post styles</div>
+  <h2>Seven styles. One clean post.</h2>
+  <div class="list">
+    <div class="row"><span class="k">announcement</span><span class="v">Launches, releases, milestones</span></div>
+    <div class="row"><span class="k">insight</span><span class="v">An opinion with supporting points</span></div>
+    <div class="row"><span class="k">news</span><span class="v">Recent developments and why they matter</span></div>
+    <div class="row"><span class="k">story</span><span class="v">A short story that ends in a lesson</span></div>
+    <div class="row"><span class="k">howto</span><span class="v">Numbered steps to a result</span></div>
+    <div class="row"><span class="k">listicle</span><span class="v">Tips, tools, mistakes</span></div>
+    <div class="row"><span class="k">question</span><span class="v">A discussion starter</span></div>
+  </div>
+  <div class="foot"><span>quillpost styles news</span></div>
+  <div class="bar"></div>
+</section>
+
+<!-- 4 checks -->
+<section class="slide" id="s4">
+  <div class="top"><span class="brand">Quillpost</span><span class="count">4 / 7</span></div>
+  <div class="kicker">Checks</div>
+  <h2>Know before you publish.</h2>
+  <div class="flow">
+    <div class="step"><div class="n">✗</div><div><div class="t">Blocks real problems</div><div class="d">Empty or over 3,000 characters, markdown that would show literally, bad attachments</div></div></div>
+    <div class="step"><div class="n">!</div><div><div class="t">Warns about reach</div><div class="d">Long hooks, links in the body, missing or too many hashtags</div></div></div>
+    <div class="step"><div class="n">↵</div><div><div class="t">Shows the “see more” cut</div><div class="d">Exactly what people read before they tap</div></div></div>
+    <div class="step"><div class="n">⇄</div><div><div class="t">Converts markdown</div><div class="d"><code>--plain</code> turns an AI draft into LinkedIn plain text</div></div></div>
+  </div>
+  <div class="foot"><span>quillpost preview</span></div>
+  <div class="bar"></div>
+</section>
+
+<!-- 5 agents -->
+<section class="slide" id="s5">
+  <div class="top"><span class="brand">Quillpost</span><span class="count">5 / 7</span></div>
+  <div class="kicker">For AI agents</div>
+  <h2>Agents preview. You approve.</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><div><div class="t">Agent builds a preview</div><div class="d"><code>quillpost_preview</code> publishes nothing</div></div></div>
+    <div class="step"><div class="n">2</div><div><div class="t">You read the exact text</div><div class="d">Style, visibility, attachments, warnings</div></div></div>
+    <div class="step"><div class="n">3</div><div><div class="t">You say yes in chat</div><div class="d">Only then <code>approved: true</code> is sent</div></div></div>
+  </div>
+  <p class="lead" style="margin-top:44px">A standard MCP server with <b>17 tools</b>: works with Claude Code, Cursor, VS Code and more.</p>
+  <div class="foot"><span>A guardrail, not a sandbox: it relies on the agent following instructions.</span></div>
+  <div class="bar"></div>
+</section>
+
+<!-- 6 more than text -->
+<section class="slide" id="s6">
+  <div class="top"><span class="brand">Quillpost</span><span class="count">6 / 7</span></div>
+  <div class="kicker">And more</div>
+  <h2>More than text.</h2>
+  <div class="list">
+    <div class="row"><span class="k">Rich posts</span><span class="v">Link cards, images with alt text, document carousels</span></div>
+    <div class="row"><span class="k">History</span><span class="v">See and delete what you published from the terminal</span></div>
+    <div class="row"><span class="k">Drafts</span><span class="v">Save a post now, publish it later</span></div>
+    <div class="row"><span class="k">Schedule</span><span class="v">A local queue (LinkedIn has no scheduling API)</span></div>
+    <div class="row"><span class="k">Private</span><span class="v">Your credentials stay on your machine</span></div>
+  </div>
+  <div class="foot"><span>Self-serve API only: your own profile, not Pages or analytics</span></div>
+  <div class="bar"></div>
+</section>
+
+<!-- 7 get started -->
+<section class="slide" id="s7">
+  <div class="top"><span class="brand">Quillpost</span><span class="count">7 / 7</span></div>
+  <div class="kicker">Get started</div>
+  <h2>Up and running in minutes.</h2>
+  <div class="term"><span class="c"># needs a free LinkedIn developer app</span>
+git clone \
+  https://github.com/ApiCartOps/quillpost
+npm install && npm link
+quillpost setup \
+  --client-id=… --client-secret=…
+quillpost login</div>
+  <div class="url">github.com/ApiCartOps/quillpost</div>
+  <p class="lead">Open source, MIT licensed. Docs, post styles and the MCP guide are in the repo.</p>
+  <div class="foot"><span>Links are in the first comment ↓</span><span>Not affiliated with LinkedIn</span></div>
+  <div class="bar"></div>
+</section>
+
+</body>
+</html>

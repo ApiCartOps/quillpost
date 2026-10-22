@@ -2,7 +2,7 @@
 
 A post can carry one kind of attachment: a link card, images, or a document. They cannot be combined; Quillpost rejects a mix before anything is published.
 
-> **Status:** these are built to LinkedIn's documented request shapes and covered by an offline test suite, but have not all been verified on a live account. If one fails for you, [open an issue](https://github.com/ApiCartOps/quillpost/issues) with the error text.
+> **Status:** document carousels are verified on a live account. Link cards and images follow LinkedIn's documented request shapes and are covered by an offline test suite, but have not been confirmed live. If one fails for you, [open an issue](https://github.com/ApiCartOps/quillpost/issues) with the error text.
 
 ## Link with a preview card
 
@@ -30,15 +30,21 @@ quillpost post --text-file=post.txt --document=deck.pdf --doc-title="Q3 review"
 
 PDF, PowerPoint or Word, up to 100 MB. LinkedIn shows it as a swipeable carousel. PDFs with one idea per page work best. The title is shown above the carousel.
 
-## First comment
+## First comment (needs partner access)
 
 ```bash
 quillpost post --text-file=post.txt --comment="Sources: https://example.com/a https://example.com/b"
 ```
 
-The comment is posted right after the post is published. It is the right place for source links. If the post succeeds but the comment fails, the post stays up and the error is reported (`commentError`).
+A first comment is the best place for source links, because links in the post body can reduce reach. But **LinkedIn only allows commenting through its API for approved partners** (the Community Management API). On a self-serve app the request is refused with `403 ACCESS_DENIED`.
 
-With `--plain --links-to-comment`, links found in markdown are moved into the first comment for you.
+Quillpost handles that gracefully:
+
+- `preview` warns you up front that the comment may fail.
+- The **post still publishes**; a failed comment never fails the publish.
+- The result includes `commentError` and **`commentToPaste`**, and the CLI prints the text so you can paste it as the first comment on LinkedIn yourself.
+
+With `--plain --links-to-comment`, links found in markdown are moved into that comment text for you, with the same caveat.
 
 ## Visibility
 
@@ -47,10 +53,10 @@ With `--plain --links-to-comment`, links found in markdown are moved into the fi
 ## Follow-up
 
 ```bash
-quillpost posts                       # posts published through Quillpost, with ids
-quillpost comment last "Update: ..."  # comment on your own post
-quillpost react last --type=PRAISE    # LIKE, PRAISE, APPRECIATION, EMPATHY, INTEREST, ENTERTAINMENT
-quillpost delete last                 # irreversible
+quillpost posts          # posts published through Quillpost, with ids
+quillpost delete last    # irreversible
 ```
 
 `last`, a history id, or a full URN such as `urn:li:share:123` all work. LinkedIn's self-serve API does not let apps read your feed, so `posts` lists only what Quillpost published.
+
+`quillpost comment <post> <text>` and `quillpost react <post> --type=PRAISE` exist for accounts that have Community Management API access. On a self-serve app they fail with a message explaining that, and you do those two things on LinkedIn.

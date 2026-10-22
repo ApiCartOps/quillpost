@@ -39,7 +39,7 @@ Launches, releases, new roles, milestones. Say what it is, what is included, and
 A point of view with two to five supporting points. Lead with the claim; use the takeaway for the "so what".
 
 ### news
-Recent developments, one item each: what happened, then why it matters. Name the company and the thing. Link sources in the first comment, not the body.
+Recent developments, one item each: what happened, then why it matters. Name the company and the thing. Keep source links out of the body; put them in a first comment (on a self-serve app you paste that comment yourself, see [Rich posts](rich-posts.md#first-comment-needs-partner-access)).
 
 ### story
 Short paragraphs, one or two sentences each, ending in a lesson. No bullets.
@@ -82,7 +82,7 @@ The preview also shows the **feed cut**: the text people see before "see more".
 quillpost post --text-file=draft.md --plain --links-to-comment
 ```
 
-`--plain` rewrites markdown into LinkedIn plain text: headings lose their `#`, `**bold**` loses its asterisks, `- bullets` become `→`, and `[label](url)` becomes `label`. With `--links-to-comment`, the removed URLs are posted together as the first comment. You can combine `--plain` with a style.
+`--plain` rewrites markdown into LinkedIn plain text: headings lose their `#`, `**bold**` loses its asterisks, `- bullets` become `→`, and `[label](url)` becomes `label`. With `--links-to-comment`, the removed URLs become the first-comment text. LinkedIn only allows API comments for partner apps, so on a self-serve app that comment is refused; the post still publishes and the text is printed for you to paste (see [Rich posts](rich-posts.md#first-comment-needs-partner-access)). You can combine `--plain` with a style.
 
 Unicode "bold" lookalike text is intentionally not offered: it reads badly with screen readers and breaks search.
 

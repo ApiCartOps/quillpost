@@ -79,7 +79,7 @@ Change `preview` to `post` to publish. Add `--dry-run` to any `post` to check it
 
 `quillpost styles news` shows one with a full example. See [Post styles](docs/post-styles.md) for every field and check.
 
-Already have text from somewhere else? Skip styles: `quillpost post --text-file=draft.md --plain` converts markdown to LinkedIn plain text and can move links into the first comment.
+Already have text from somewhere else? Skip styles: `quillpost post --text-file=draft.md --plain` converts markdown to LinkedIn plain text and can pull the links out for a first comment.
 
 ## More than text
 
@@ -90,7 +90,9 @@ quillpost post --text-file=post.txt --document=deck.pdf --doc-title="Q3 review"
 quillpost post --text-file=post.txt --comment="Sources: https://example.com/a"
 ```
 
-Images (1 to 20), a PDF or Office document as a swipeable carousel, link preview cards and a first comment are covered in [Rich posts](docs/rich-posts.md).
+Images (1 to 20), a PDF or Office document as a swipeable carousel, and link preview cards are covered in [Rich posts](docs/rich-posts.md).
+
+> **The first comment needs partner access.** LinkedIn restricts commenting through its API to approved partners, so on a self-serve app `--comment` is refused with a 403. The post still publishes, and Quillpost prints the comment text so you can paste it yourself.
 
 ## Drafts, schedule and follow-up
 
@@ -102,10 +104,10 @@ quillpost schedule add --at="2026-10-23 09:00" --text-file=post.txt
 quillpost schedule watch                 # publishes due posts while it runs
 
 quillpost posts                          # what you published through Quillpost
-quillpost comment last "Thanks for the replies, here is the repo: ..."
-quillpost react last --type=PRAISE
 quillpost delete last
 ```
+
+`quillpost comment` and `quillpost react` exist too, but LinkedIn only allows them for partner apps (see below), so on a self-serve app they fail with a clear message.
 
 LinkedIn's API has no native scheduling, so the schedule is a local queue. See [Scheduling](docs/scheduling.md) for how to run it from Task Scheduler, cron or launchd.
 
@@ -121,18 +123,19 @@ Other clients: `quillpost config` prints the standard `mcpServers` snippet. [MCP
 |---|---|
 | `quillpost_styles`, `quillpost_preview` | Browse styles; build and check a post without publishing |
 | `quillpost_post` | Publish. Only previews unless `approved: true` |
-| `quillpost_comment`, `quillpost_react`, `quillpost_delete` | Act on your posts. Need `approved: true` |
+| `quillpost_delete` | Delete a post. Needs `approved: true` |
+| `quillpost_comment`, `quillpost_react` | Partner-only on LinkedIn's side; fail with 403 on self-serve apps |
 | `quillpost_draft_*` | Save, list, show, delete and publish drafts |
 | `quillpost_schedule_*` | Queue, list, cancel and run scheduled posts |
 | `quillpost_history`, `quillpost_whoami` | Your Quillpost posts; the signed-in account |
 
-Server instructions, one prompt per style (`write_news`, `write_howto`, ...) and a `quillpost://styles` resource are included. The `.claude/` folder has a Claude Code skill and slash commands (`/quillpost-post`, `/quillpost-preview`, `/quillpost-comment`).
+Server instructions, one prompt per style (`write_news`, `write_howto`, ...) and a `quillpost://styles` resource are included. The `.claude/` folder has a Claude Code skill and slash commands (`/quillpost-post`, `/quillpost-preview`, `/quillpost-delete`).
 
 ## What it can and cannot do
 
-Quillpost uses only LinkedIn's **self-serve** products, so it covers your own profile: posting, images, documents, links, comments, reactions and deleting. Reading your feed, searching, analytics, connections and messaging need partner approval from LinkedIn and are not supported. Posts are always published as you.
+Quillpost uses only LinkedIn's **self-serve** products, so it covers your own profile: posting text, images, documents and link cards, and deleting. Reading your feed, searching, analytics, connections, messaging and **commenting and reactions** need partner approval (the Community Management API) and are not available on a self-serve app. Posts are always published as you.
 
-> **Status:** text posts and deleting have been verified against the live LinkedIn API. Images, documents, link cards, comments and reactions are built to LinkedIn's documented request shapes and covered by an offline test suite with a fake API. If one behaves differently on your account, please [open an issue](https://github.com/ApiCartOps/quillpost/issues) with the error text.
+> **Status (verified against the live LinkedIn API):** text posts, document carousels and deleting work. **Commenting is refused with `403 ACCESS_DENIED`** on a self-serve app, and reactions very likely are too; Quillpost reports this clearly and still publishes the post. Images and link cards follow LinkedIn's documented request shapes and are covered by an offline test suite with a fake API, but have not been confirmed live. If one behaves differently on your account, please [open an issue](https://github.com/ApiCartOps/quillpost/issues) with the error text.
 
 ## Security
 

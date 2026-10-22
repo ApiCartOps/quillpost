@@ -66,6 +66,10 @@ export function build(spec) {
   }
 
   const firstComment = spec.firstComment ?? (spec.linksToComment && links.length ? links.join("\n") : undefined);
+  if (firstComment) {
+    warnings.push("the first comment uses LinkedIn's commenting API, which is partner-only; on a self-serve app it usually fails with 403, " +
+      "in which case the post still publishes and you paste the comment yourself (it is returned as commentToPaste)");
+  }
   return { text, errors, soft, warnings, stats: l.stats, seeMore: l.seeMore, links, visibility, attachments, firstComment };
 }
 
@@ -97,7 +101,11 @@ export async function publish(spec, { dryRun = false } = {}) {
   const result = { published: true, id: row.id, urn, url: row.url, warnings: b.warnings };
   if (b.firstComment) {
     try { result.comment = await api.comment(urn, b.firstComment); }
-    catch (e) { result.commentError = e.message; }
+    catch (e) {
+      // The post is live; never fail the publish over its comment. Hand the text back so nothing is lost.
+      result.commentError = e.message;
+      result.commentToPaste = b.firstComment;
+    }
   }
   return result;
 }
@@ -109,8 +117,8 @@ export async function runDue(now = Date.now()) {
     if (item.status !== "pending" || new Date(item.at).getTime() > now) continue;
     try {
       const r = await publish(item.spec);
-      queue.update(item.id, { status: "published", result: { urn: r.urn, url: r.url } });
-      done.push({ id: item.id, status: "published", url: r.url });
+      queue.update(item.id, { status: "published", result: { urn: r.urn, url: r.url, commentToPaste: r.commentToPaste } });
+      done.push({ id: item.id, status: "published", url: r.url, ...(r.commentToPaste && { commentToPaste: r.commentToPaste }) });
     } catch (e) {
       queue.update(item.id, { status: "failed", error: e.message });
       done.push({ id: item.id, status: "failed", error: e.message });
