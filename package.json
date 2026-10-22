@@ -1,6 +1,6 @@
 {
   "name": "quillpost",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Write, check and publish LinkedIn posts from your terminal or AI agent, on LinkedIn's official API",
   "type": "module",
   "bin": {
