@@ -1,10 +1,10 @@
 {
-  "name": "linkedin-official",
-  "version": "0.1.0",
-  "description": "CLI and MCP server built on LinkedIn's official REST API (OAuth 2.0)",
+  "name": "quillpost",
+  "version": "0.3.0",
+  "description": "Write, check and publish LinkedIn posts from your terminal or AI agent, on LinkedIn's official API",
   "type": "module",
   "bin": {
-    "linkedin-official": "src/cli.js"
+    "quillpost": "src/cli.js"
   },
   "engines": {
     "node": ">=20"
@@ -15,10 +15,29 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ApiCartOps/linkedin-official.git"
+    "url": "git+https://github.com/ApiCartOps/quillpost.git"
   },
   "license": "MIT",
   "scripts": {
     "test": "node scripts/check.mjs"
-  }
+  },
+  "keywords": [
+    "linkedin",
+    "mcp",
+    "model-context-protocol",
+    "cli",
+    "social-media",
+    "posts",
+    "ai-agents"
+  ],
+  "homepage": "https://github.com/ApiCartOps/quillpost#readme",
+  "bugs": {
+    "url": "https://github.com/ApiCartOps/quillpost/issues"
+  },
+  "files": [
+    "src/",
+    "content/",
+    "README.md",
+    "LICENSE"
+  ]
 }

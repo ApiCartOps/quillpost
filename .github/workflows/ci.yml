@@ -25,3 +25,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+
+  package:
+    name: package contents
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - name: Dry-run pack and check for stray files
+        run: |
+          npm pack --dry-run --json > pack.json
+          node -e "
+            const files = JSON.parse(require('fs').readFileSync('pack.json','utf8'))[0].files.map(f => f.path);
+            const bad = files.filter(f => !/^(src\/|content\/|README\.md$|LICENSE$|package\.json$)/.test(f));
+            if (bad.length) { console.error('Unexpected files in package:', bad); process.exit(1); }
+            console.log(files.length + ' files OK');
+          "

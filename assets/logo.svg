@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Quillpost logo">
+  <rect width="128" height="128" rx="28" fill="#0f172a"/>
+  <!-- feather -->
+  <path d="M96 22 C66 26 40 52 36 92 C52 82 65 74 76 63 C88 51 94 38 96 22 Z" fill="#f8fafc"/>
+  <path d="M40 94 L88 36" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <!-- the nib is a node, connected onward -->
+  <path d="M33 100 L66 106 L98 92" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="66" cy="106" r="5.5" fill="#94a3b8"/>
+  <circle cx="98" cy="92" r="5.5" fill="#94a3b8"/>
+  <circle cx="33" cy="100" r="8" fill="#2dd4bf"/>
+</svg>

@@ -1,0 +1,56 @@
+# Rich posts
+
+A post can carry one kind of attachment: a link card, images, or a document. They cannot be combined; Quillpost rejects a mix before anything is published.
+
+> **Status:** these are built to LinkedIn's documented request shapes and covered by an offline test suite, but have not all been verified on a live account. If one fails for you, [open an issue](https://github.com/ApiCartOps/quillpost/issues) with the error text.
+
+## Link with a preview card
+
+```bash
+quillpost post "Release notes are up" --link=https://example.com/release --link-title="v2.0 release notes" --link-desc="What changed and how to upgrade"
+```
+
+LinkedIn builds the card from the link. Title and description are optional but give a better card. A link in the post **body** can reduce reach; if you only want a link, using `--link` shows it as a card instead.
+
+## Images
+
+```bash
+quillpost post --text-file=post.txt --image=chart.png --alt="Weekly signups doubled in October"
+```
+
+- 1 to 20 images, PNG, JPG or GIF, up to 8 MB each.
+- One image shows as a single picture; two or more become a multi-image post.
+- Repeat `--alt` once per image, in the same order. Alt text helps readers who use screen readers; Quillpost warns when it is missing.
+
+## Documents (carousels)
+
+```bash
+quillpost post --text-file=post.txt --document=deck.pdf --doc-title="Q3 review"
+```
+
+PDF, PowerPoint or Word, up to 100 MB. LinkedIn shows it as a swipeable carousel. PDFs with one idea per page work best. The title is shown above the carousel.
+
+## First comment
+
+```bash
+quillpost post --text-file=post.txt --comment="Sources: https://example.com/a https://example.com/b"
+```
+
+The comment is posted right after the post is published. It is the right place for source links. If the post succeeds but the comment fails, the post stays up and the error is reported (`commentError`).
+
+With `--plain --links-to-comment`, links found in markdown are moved into the first comment for you.
+
+## Visibility
+
+`--visibility=PUBLIC` (default), `CONNECTIONS` or `LOGGED_IN` (any signed-in LinkedIn member). LinkedIn's API has no truly private option for member posts; `CONNECTIONS` is the narrowest.
+
+## Follow-up
+
+```bash
+quillpost posts                       # posts published through Quillpost, with ids
+quillpost comment last "Update: ..."  # comment on your own post
+quillpost react last --type=PRAISE    # LIKE, PRAISE, APPRECIATION, EMPATHY, INTEREST, ENTERTAINMENT
+quillpost delete last                 # irreversible
+```
+
+`last`, a history id, or a full URN such as `urn:li:share:123` all work. LinkedIn's self-serve API does not let apps read your feed, so `posts` lists only what Quillpost published.

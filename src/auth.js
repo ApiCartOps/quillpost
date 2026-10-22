@@ -8,11 +8,11 @@ const SCOPES = "openid profile email w_member_social";
 export async function login() {
   const cfg = loadConfig();
   if (!cfg.clientId || !cfg.clientSecret) {
-    throw new Error("Run `linkedin-official setup --client-id=... --client-secret=...` first (from your app at linkedin.com/developers).");
+    throw new Error("Run `quillpost setup --client-id=... --client-secret=...` first (from your app at linkedin.com/developers).");
   }
   const state = crypto.randomBytes(16).toString("hex");
   const redirect = new URL(cfg.redirectUri);
-  const url = new URL("https://www.linkedin.com/oauth/v2/authorization");
+  const url = new URL(`${cfg.oauthBase}/oauth/v2/authorization`);
   url.search = new URLSearchParams({
     response_type: "code", client_id: cfg.clientId, redirect_uri: cfg.redirectUri, state, scope: SCOPES,
   }).toString();
@@ -27,14 +27,15 @@ export async function login() {
       server.close();
       ok ? resolve(u.searchParams.get("code")) : reject(new Error(u.searchParams.get("error_description") ?? "OAuth state mismatch or denied"));
     });
-    server.on("error", reject);
+    server.on("error", (e) => reject(e.code === "EADDRINUSE"
+      ? new Error(`Port ${redirect.port} is busy (an earlier login may still be running). Close it and retry.`) : e));
     server.listen(Number(redirect.port), redirect.hostname);
     console.error(`Open this URL to authorize:\n${url}\n`);
     const open = process.platform === "win32" ? `start "" "${url}"` : process.platform === "darwin" ? `open "${url}"` : `xdg-open "${url}"`;
     exec(open, () => {});
   });
 
-  const r = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
+  const r = await fetch(`${cfg.oauthBase}/oauth/v2/accessToken`, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({

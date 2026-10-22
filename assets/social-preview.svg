@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" role="img" aria-label="Quillpost: write, check and publish LinkedIn posts from your terminal or AI agent">
+  <rect width="1280" height="640" fill="#0f172a"/>
+  <rect x="0" y="632" width="1280" height="8" fill="#2dd4bf"/>
+  <g transform="translate(96 150) scale(2.6)">
+    <rect width="128" height="128" rx="28" fill="#1e293b"/>
+    <path d="M96 22 C66 26 40 52 36 92 C52 82 65 74 76 63 C88 51 94 38 96 22 Z" fill="#f8fafc"/>
+    <path d="M40 94 L88 36" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <path d="M33 100 L66 106 L98 92" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="66" cy="106" r="5.5" fill="#94a3b8"/>
+    <circle cx="98" cy="92" r="5.5" fill="#94a3b8"/>
+    <circle cx="33" cy="100" r="8" fill="#2dd4bf"/>
+  </g>
+  <g font-family="'Segoe UI', Inter, 'Helvetica Neue', Arial, sans-serif">
+    <text x="470" y="262" font-size="112" font-weight="700" fill="#f8fafc">Quillpost</text>
+    <text x="474" y="332" font-size="36" fill="#94a3b8">Write, check and publish LinkedIn posts</text>
+    <text x="474" y="378" font-size="36" fill="#94a3b8">from your terminal or AI agent.</text>
+    <g font-size="26" font-weight="600" fill="#2dd4bf">
+      <text x="474" y="470">CLI  ·  MCP server  ·  7 post styles  ·  official API</text>
+    </g>
+    <text x="474" y="530" font-size="22" fill="#64748b">Not affiliated with or endorsed by LinkedIn.</text>
+  </g>
+</svg>
