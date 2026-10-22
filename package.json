@@ -17,5 +17,8 @@
     "type": "git",
     "url": "git+https://github.com/ApiCartOps/linkedin-official.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "node scripts/check.mjs"
+  }
 }
