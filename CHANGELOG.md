@@ -2,6 +2,16 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/), and versions follow [semantic versioning](https://semver.org/).
 
+## [0.4.0]
+
+### Added
+- Claude Code skill: an agent workflow where a research agent and a content agent prepare a post and the main agent previews and publishes only after the user approves in chat. Subagents never call Quillpost tools.
+- Skill guidance for an optional Unicode bold hook, with a screen-reader and search caveat.
+
+### Changed
+- Skill: no brackets or parentheses in post text, because LinkedIn's API cuts a post at the first one.
+- Skill: prefer a PDF document carousel over several images, which LinkedIn crops in the feed.
+
 ## [0.3.1]
 
 Correction: comments and reactions are not available on a self-serve LinkedIn app.
