@@ -2,6 +2,12 @@
 
 All notable changes to this project are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/), and versions follow [semantic versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Skill: bundled image renderers in `tools/`. `make_card.py` makes a 1200x627 PNG card, or an animated GIF with `--gif` or `--flashy`. `make_explainer.py` makes a short animated explainer of how AI video is generated, followed by the flashy card. They need Python 3 and Pillow.
+- Skill: guidance for checking GIF frames, GIF size limits and alt text for animated images.
+
 ## [0.4.0]
 
 ### Added
