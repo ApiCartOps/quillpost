@@ -48,7 +48,7 @@ This is a guardrail, not a sandbox: it relies on the agent honoring the instruct
 | `quillpost_whoami` | no | The signed-in LinkedIn member |
 | `quillpost_styles` | no | List styles, or one with its example text |
 | `quillpost_preview` | no | Build and check a post; text, stats, feed cut, warnings, errors |
-| `quillpost_post` | with `approved` | Publish text, a style post, link, images or a document |
+| `quillpost_post` | with `approved` | Publish text, a style post, link, images, a document or a video |
 | `quillpost_comment` | with `approved` | Comment on one of your posts. **Partner-only on LinkedIn's side**; fails with 403 on self-serve apps |
 | `quillpost_react` | with `approved` | React to a post. Same restriction (expected to fail the same way) |
 | `quillpost_delete` | with `approved` | Delete a post |
@@ -59,7 +59,7 @@ This is a guardrail, not a sandbox: it relies on the agent honoring the instruct
 | `quillpost_schedule_list` / `_cancel` | no | Manage the queue |
 | `quillpost_schedule_run_due` | with `approved` | Publish due queued posts |
 
-`quillpost_post` and `quillpost_preview` take the same fields: `text`, or `style` with `hook`, `intro`, `items`, `takeaway`, `cta`, `tags`; plus `plain`, `visibility`, `first_comment`, `link`, `images`, `document`, `force`.
+`quillpost_post` and `quillpost_preview` take the same fields: `text`, or `style` with `hook`, `intro`, `items`, `takeaway`, `cta`, `tags`; plus `plain`, `visibility`, `first_comment`, `link`, `images`, `document`, `video`, `force`.
 
 **First comments and partner access.** `first_comment` (like `quillpost_comment`) uses LinkedIn's commenting API, which only approved partners can use. On a self-serve app LinkedIn refuses it with 403. The post still publishes, and the result carries `commentError` and `commentToPaste`; the server instructions tell the agent to hand that text to you to paste on LinkedIn and not to retry.
 

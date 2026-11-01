@@ -1,6 +1,6 @@
 # Rich posts
 
-A post can carry one kind of attachment: a link card, images, or a document. They cannot be combined; Quillpost rejects a mix before anything is published.
+A post can carry one kind of attachment: a link card, images, a document, or a video. They cannot be combined; Quillpost rejects a mix before anything is published.
 
 > **Status:** document carousels are verified on a live account. Link cards and images follow LinkedIn's documented request shapes and are covered by an offline test suite, but have not been confirmed live. If one fails for you, [open an issue](https://github.com/ApiCartOps/quillpost/issues) with the error text.
 
@@ -21,6 +21,17 @@ quillpost post --text-file=post.txt --image=chart.png --alt="Weekly signups doub
 - 1 to 20 images, PNG, JPG or GIF, up to 8 MB each.
 - One image shows as a single picture; two or more become a multi-image post.
 - Repeat `--alt` once per image, in the same order. Alt text helps readers who use screen readers; Quillpost warns when it is missing.
+
+## Video
+
+```
+quillpost post --text-file=post.txt --video=demo.mp4 --video-title="Demo of the new export"
+```
+
+- One MP4, 75 KB to 500 MB, 3 seconds to 30 minutes. The title is shown with the video.
+- The file is uploaded in 4 MB parts when you publish, so a large video takes a while. Quillpost then waits up to three minutes for LinkedIn to process it. If LinkedIn is still working, the post is published anyway with a warning, and the video starts playing once processing finishes. If LinkedIn rejects the video, nothing is posted.
+- Captions and custom thumbnails are not supported yet. LinkedIn picks a thumbnail itself.
+- Status: this follows LinkedIn's documented Videos API and is covered by the offline test suite, but has not been confirmed on a live account. If it fails for you, [open an issue](https://github.com/ApiCartOps/quillpost/issues) with the error text.
 
 ## Documents (carousels)
 

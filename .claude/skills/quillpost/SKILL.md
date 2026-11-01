@@ -51,6 +51,7 @@ LinkedIn shows plain text only: no markdown, no bold, no headings.
 - `link: { url, title, description }` for a preview card.
 - `images: [{ path, alt }]` for 1 to 20 local images; always ask for or write alt text. Multi-image posts get cropped into a strip in the feed, so use this for one image only.
 - `document: { path, title }` for a PDF or Office file shown as a carousel. Prefer this for several diagrams or slides: each page shows whole.
+- `video: { path, title }` for one MP4, 75 KB to 500 MB, uploaded when you publish. Use the `quillpost-video` skill for the full flow.
 
 ## Making an image for a post
 

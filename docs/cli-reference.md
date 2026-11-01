@@ -37,11 +37,12 @@ Run `quillpost` with no arguments for the built-in help. Without `npm link`, use
 | `--link=URL` `--link-title=` `--link-desc=` | Link with a preview card |
 | `--image=PATH` `--alt=` | Repeat both for each image, same order |
 | `--document=PATH` `--doc-title=` | PDF, PowerPoint or Word as a carousel |
+| `--video=PATH` `--video-title=` | One MP4, 75 KB to 500 MB |
 | `--force` | Publish despite markdown errors (hard errors still block) |
 | `--json` | Machine-readable output |
 | `--dry-run` | With `post`: check without publishing |
 
-Use only one of `--link`, `--image` or `--document` per post.
+Use only one of `--link`, `--image`, `--document` or `--video` per post.
 
 Output of `preview` and `--dry-run`: the final text between rules, a stats line (visibility, characters, hook length, hashtags, links), the feed cut, attachments, the first comment, then `✗` errors and `!` warnings.
 

@@ -59,6 +59,61 @@ async function upload(kind, filePath) {
 export const uploadImage = (p) => upload("image", p);
 export const uploadDocument = (p) => upload("document", p);
 
+/**
+ * Upload an MP4 with LinkedIn's Videos API: initializeUpload, PUT each byte range LinkedIn asks for
+ * (4 MiB parts) and keep every ETag, then finalizeUpload. Resolves with the video urn and its status;
+ * the status is PROCESSING when LinkedIn had not finished by the time we stopped waiting.
+ */
+export async function uploadVideo(filePath) {
+  const owner = await personUrn();
+  const size = fs.statSync(filePath).size;
+  const { data } = await call("/rest/videos?action=initializeUpload", {
+    method: "POST", body: { initializeUploadRequest: { owner, fileSizeBytes: size, uploadCaptions: false, uploadThumbnail: false } },
+  });
+  const { video, uploadToken, uploadInstructions } = data.value;
+  const cfg = loadConfig();
+  const fd = fs.openSync(filePath, "r");
+  const partIds = [];
+  try {
+    for (const part of uploadInstructions) {
+      const last = Math.min(part.lastByte, size - 1);
+      const buf = Buffer.alloc(last - part.firstByte + 1);
+      fs.readSync(fd, buf, 0, buf.length, part.firstByte);
+      const r = await fetch(part.uploadUrl, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token(cfg)}`, "content-type": "application/octet-stream" },
+        body: buf,
+        signal: AbortSignal.timeout(300000),
+      }).catch((e) => { throw netError(e); });
+      if (!r.ok) throw new Error(`Upload of ${filePath} failed at byte ${part.firstByte}: ${r.status} ${await r.text()}`);
+      const etag = r.headers.get("etag");
+      if (!etag) throw new Error(`LinkedIn did not return an ETag for the part starting at byte ${part.firstByte}`);
+      partIds.push(etag.replace(/^"|"$/g, ""));
+    }
+  } finally {
+    fs.closeSync(fd);
+  }
+  await call("/rest/videos?action=finalizeUpload", {
+    method: "POST", body: { finalizeUploadRequest: { video, uploadToken: uploadToken ?? "", uploadedPartIds: partIds } },
+  });
+  return { urn: video, status: await waitForVideo(video) };
+}
+
+/** Poll until LinkedIn has processed the video. Returns the last status seen (AVAILABLE, or PROCESSING if we ran out of time). */
+export async function waitForVideo(urn) {
+  const every = Number(process.env.QUILLPOST_VIDEO_POLL_MS) || 3000;
+  const until = Date.now() + (Number(process.env.QUILLPOST_VIDEO_WAIT_MS) || 180000);
+  for (;;) {
+    const { data } = await call(`/rest/videos/${encodeURIComponent(urn)}`);
+    if (data?.status === "AVAILABLE") return "AVAILABLE";
+    if (data?.status === "PROCESSING_FAILED") {
+      throw new Error(`LinkedIn could not process the video: ${data.processingFailureReason ?? "no reason given"}`);
+    }
+    if (Date.now() >= until) return data?.status ?? "PROCESSING";
+    await new Promise((r) => setTimeout(r, every));
+  }
+}
+
 export async function createPost({ text, visibility = "PUBLIC", content }) {
   const { headers } = await call("/rest/posts", {
     method: "POST",
