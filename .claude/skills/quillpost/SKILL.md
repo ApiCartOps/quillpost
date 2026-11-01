@@ -1,6 +1,6 @@
 ---
 name: quillpost
-description: Write, check and publish LinkedIn posts with the Quillpost MCP server. Use when the user wants to write a LinkedIn post, turn text or notes into a LinkedIn post, publish or schedule one, add an image, document or link, delete a post, or check which LinkedIn account is connected.
+description: Write, check and publish LinkedIn posts with the Quillpost MCP server. Use when the user wants to write a LinkedIn post, turn text or notes into a LinkedIn post, publish or schedule one, make or add an image, animated GIF, document or link, delete a post, or check which LinkedIn account is connected.
 ---
 
 # Quillpost (LinkedIn)
@@ -51,6 +51,34 @@ LinkedIn shows plain text only: no markdown, no bold, no headings.
 - `link: { url, title, description }` for a preview card.
 - `images: [{ path, alt }]` for 1 to 20 local images; always ask for or write alt text. Multi-image posts get cropped into a strip in the feed, so use this for one image only.
 - `document: { path, title }` for a PDF or Office file shown as a carousel. Prefer this for several diagrams or slides: each page shows whole.
+
+## Making an image for a post
+
+Use the bundled renderers when the user wants an image and has none. They need Python 3 and Pillow (`pip install pillow`), make 1200x627 images with text only, no logos and no third-party branding, and exit with an error if any text would overflow. The commands below assume the skill folder is the working directory, so use the folder this skill was loaded from.
+
+Static PNG card:
+
+```
+python -I tools/make_card.py --out <scratchpad>/card.png \
+  --kicker "Short label" --title "Headline, one idea" --subtitle "One supporting line" \
+  --point "Point one" --point "Point two" --point "Point three" --footer "Source: where the facts came from" \
+  [--theme dark|light|violet|emerald|sunset] [--watermark "site.com"]
+```
+
+Animated GIF, only when the user asks for a gif, animated or flashy image. Use a `.gif` path for all three:
+
+- `make_card.py ... --gif`: a calm card where the points appear one by one, then hold.
+- `make_card.py ... --flashy`: multicolor, with a hue-cycling gradient and a differently colored bullet per point. About 1.3 MB.
+- `make_explainer.py`: takes the same `--title --subtitle --point --footer --kicker --watermark` options plus `--prompt "..."`. It first shows a simplified picture of how AI video is generated, a prompt typed, noise cleared step by step from four frames, then the frames played back, and then the flashy card. About 3 MB. Use it only for posts about AI video or image generation, and keep its "Simplified illustration" footer, because it is not a drawing of any one model.
+
+`--watermark` puts the user's own site name bottom right. Add it only when the user asks for it.
+
+Rules:
+1. Only put facts from the post or its research on the card. Do not add numbers, quotes or claims the post does not make. Keep at most 4 points, short.
+2. Write the file into a scratch directory, then open it and check it yourself: nothing cut off, nothing misspelled, contrast readable. For a GIF, extract a few frames with Pillow (`Image.open(gif).seek(n)`, save as PNG) and check the first, a middle one and the last. You cannot watch it play, so say so. Fix and re-render if anything is wrong.
+3. Pass it as `images: [{ path, alt }]` using the `suggestedAlt` the script prints, edited if needed. For a GIF, start the alt with "Animated" and say what the animation shows. Show the user the image path and alt text in the preview, and get approval of text and image together. A changed image needs fresh approval.
+4. One image per post. For several slides, render each card and combine them into a PDF for `document`.
+5. GIF limits: keep the file under about 4 MB, since LinkedIn's cap is not confirmed, and tell the user the size. Warn that LinkedIn may show only the first frame, and that the image of a published post cannot be swapped without deleting it. For an animated card keep the title in the first frame, so a still image still makes sense. The explainer's first frame is colored noise, so mention that.
 
 ## Other actions
 
