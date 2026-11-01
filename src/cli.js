@@ -31,7 +31,8 @@ Post options
   --link=URL [--link-title= --link-desc=]
   --image=PATH (repeat) [--alt= (repeat, same order)]
   --document=PATH [--doc-title=]
-  --force                           Publish despite lint errors
+  --video=PATH.mp4 [--video-title=]  One MP4, 75 KB to 500 MB, 3 seconds to 30 minutes
+  --force                          Publish despite lint errors
   --json                            Machine-readable output
 
 Drafts and schedule
@@ -60,6 +61,7 @@ const { values: v, positionals } = parseArgs({
     link: { type: "string" }, "link-title": { type: "string" }, "link-desc": { type: "string" },
     image: { type: "string", multiple: true }, alt: { type: "string", multiple: true },
     document: { type: "string" }, "doc-title": { type: "string" },
+    video: { type: "string" }, "video-title": { type: "string" },
     force: { type: "boolean" }, json: { type: "boolean" }, "dry-run": { type: "boolean" },
     at: { type: "string" }, every: { type: "string" }, type: { type: "string" },
   },
@@ -82,6 +84,7 @@ function specFromArgs(words) {
     link: v.link && { url: v.link, title: v["link-title"], description: v["link-desc"] },
     images: v.image?.map((p, i) => ({ path: p, alt: v.alt?.[i] })),
     document: v.document && { path: v.document, title: v["doc-title"] },
+    video: v.video && { path: v.video, title: v["video-title"] },
   };
 }
 
@@ -94,6 +97,7 @@ function printPreview(p) {
   if (a.link) console.log(`link card: ${a.link.url}`);
   if (a.images) console.log(`images: ${a.images.map((i) => i.path).join(", ")}`);
   if (a.document) console.log(`document: ${a.document.path}`);
+  if (a.video) console.log(`video: ${a.video.path}`);
   if (p.firstComment) console.log(`first comment: ${p.firstComment.replace(/\n/g, " | ")}`);
   for (const e of p.errors ?? []) console.log(`✗ ${e}`);
   for (const w of p.warnings ?? []) console.log(`! ${w}`);

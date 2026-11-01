@@ -3,7 +3,7 @@
 // spec = {
 //   text | (style + hook, intro, items[], takeaway, cta, tags[]),
 //   plain, visibility, firstComment, linksToComment, force,
-//   link: { url, title, description } | images: [{ path, alt }] | document: { path, title }
+//   link: { url, title, description } | images: [{ path, alt }] | document: { path, title } | video: { path, title }
 // }
 import fs from "node:fs";
 import path from "node:path";
@@ -13,6 +13,7 @@ import { history, queue } from "./store.js";
 
 const IMAGE_EXT = new Set([".png", ".jpg", ".jpeg", ".gif"]);
 const DOC_EXT = new Set([".pdf", ".ppt", ".pptx", ".doc", ".docx"]);
+const VIDEO_EXT = new Set([".mp4"]);
 const VISIBILITY = ["PUBLIC", "CONNECTIONS", "LOGGED_IN"];
 const MB = 1024 * 1024;
 
@@ -37,8 +38,8 @@ export function build(spec) {
   const visibility = spec.visibility ?? "PUBLIC";
   if (!VISIBILITY.includes(visibility)) errors.push(`visibility must be one of ${VISIBILITY.join(", ")}`);
 
-  const kinds = [spec.link && "link", spec.images?.length && "images", spec.document && "document"].filter(Boolean);
-  if (kinds.length > 1) errors.push(`use only one of link, images or document per post (got ${kinds.join(", ")})`);
+  const kinds = [spec.link && "link", spec.images?.length && "images", spec.document && "document", spec.video && "video"].filter(Boolean);
+  if (kinds.length > 1) errors.push(`use only one of link, images, document or video per post (got ${kinds.join(", ")})`);
 
   const attachments = {};
   if (spec.link) {
@@ -64,6 +65,19 @@ export function build(spec) {
     if (!spec.document.title) warnings.push("document has no title; it is shown above the carousel");
     attachments.document = spec.document;
   }
+  if (spec.video) {
+    const p = spec.video.path;
+    if (!VIDEO_EXT.has(path.extname(p).toLowerCase())) errors.push(`video must be an mp4: ${p}`);
+    else if (!fs.existsSync(p)) errors.push(`video not found: ${p}`);
+    else {
+      const size = fs.statSync(p).size;
+      if (size < 75 * 1024) errors.push(`video is under 75 KB, which LinkedIn rejects: ${p}`);
+      else if (size > 500 * MB) errors.push(`video is over 500 MB: ${p}`);
+      else if (size > 100 * MB) warnings.push(`video is ${Math.round(size / MB)} MB; the upload may take several minutes`);
+    }
+    if (!spec.video.title) warnings.push("video has no title; LinkedIn shows it with the video");
+    attachments.video = spec.video;
+  }
 
   const firstComment = spec.firstComment ?? (spec.linksToComment && links.length ? links.join("\n") : undefined);
   if (firstComment) {
@@ -73,7 +87,7 @@ export function build(spec) {
   return { text, errors, soft, warnings, stats: l.stats, seeMore: l.seeMore, links, visibility, attachments, firstComment };
 }
 
-async function buildContent(a) {
+async function buildContent(a, notes) {
   if (a.link) return { article: { source: a.link.url, ...(a.link.title && { title: a.link.title }), ...(a.link.description && { description: a.link.description }) } };
   if (a.images?.length) {
     const ids = [];
@@ -81,6 +95,11 @@ async function buildContent(a) {
     return ids.length === 1 ? { media: ids[0] } : { multiImage: { images: ids } };
   }
   if (a.document) return { media: { title: a.document.title ?? path.basename(a.document.path), id: await api.uploadDocument(a.document.path) } };
+  if (a.video) {
+    const { urn, status } = await api.uploadVideo(a.video.path);
+    if (status !== "AVAILABLE") notes.push(`LinkedIn was still processing the video (${status}) when the post was published; it may take a few minutes to play`);
+    return { media: { title: a.video.title ?? path.basename(a.video.path), id: urn } };
+  }
   return undefined;
 }
 
@@ -95,10 +114,11 @@ export async function publish(spec, { dryRun = false } = {}) {
   if (blocking.length) throw new Error(`Not published:\n- ${blocking.join("\n- ")}`);
   if (dryRun) return { published: false, ...preview };
 
-  const content = await buildContent(b.attachments);
+  const notes = [];
+  const content = await buildContent(b.attachments, notes);
   const { urn } = await api.createPost({ text: b.text, visibility: b.visibility, content });
   const row = history.add({ urn, url: api.postUrl(urn), visibility: b.visibility, preview: b.text.replace(/\s+/g, " ").slice(0, 100) });
-  const result = { published: true, id: row.id, urn, url: row.url, warnings: b.warnings };
+  const result = { published: true, id: row.id, urn, url: row.url, warnings: [...b.warnings, ...notes] };
   if (b.firstComment) {
     try { result.comment = await api.comment(urn, b.firstComment); }
     catch (e) {

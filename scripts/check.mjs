@@ -49,6 +49,7 @@ step("compose, validate, normalize, lint");
 // ---------- 3. fake LinkedIn API ----------
 const calls = [];
 let seq = 100;
+let videoPolls = 0, videoFails = false; // the fake video goes PROCESSING, then AVAILABLE; videoFails makes LinkedIn reject it
 let denyPartner = false; // when true, comments and reactions are refused like LinkedIn does for self-serve apps
 const server = http.createServer((req, res) => {
   const chunks = [];
@@ -70,6 +71,20 @@ const server = http.createServer((req, res) => {
     if (url.pathname.startsWith("/rest/posts/") && req.method === "DELETE") return json(204);
     if (url.pathname === "/rest/images") return json(200, { value: { uploadUrl: `http://127.0.0.1:${port}/upload/i${++seq}`, image: `urn:li:image:I${seq}` } });
     if (url.pathname === "/rest/documents") return json(200, { value: { uploadUrl: `http://127.0.0.1:${port}/upload/d${++seq}`, document: `urn:li:document:D${seq}` } });
+    if (url.pathname === "/rest/videos" && url.search === "?action=initializeUpload") {
+      const size = body.initializeUploadRequest.fileSizeBytes, part = 4194304, id = ++seq;
+      return json(200, { value: {
+        video: `urn:li:video:V${id}`, uploadToken: "tkn",
+        uploadInstructions: Array.from({ length: Math.ceil(size / part) }, (_, i) => ({
+          uploadUrl: `http://127.0.0.1:${port}/upload/v${id}-${i}`, firstByte: i * part, lastByte: Math.min((i + 1) * part, size) - 1 })),
+      } });
+    }
+    if (url.pathname === "/rest/videos" && url.search === "?action=finalizeUpload") return json(200);
+    if (url.pathname.startsWith("/rest/videos/") && req.method === "GET") {
+      videoPolls += 1;
+      return json(200, videoFails ? { status: "PROCESSING_FAILED", processingFailureReason: "bad codec" } : { status: videoPolls < 2 ? "PROCESSING" : "AVAILABLE" });
+    }
+    if (url.pathname.startsWith("/upload/v")) return json(201, null, { etag: `"tag-${url.pathname.split("/").pop()}"` });
     if (url.pathname.startsWith("/upload/")) return json(201);
     if (url.pathname.includes("/comments")) return json(201, null, { "x-restli-id": `urn:li:comment:C${++seq}` });
     if (url.pathname === "/rest/reactions") return json(201);
@@ -151,6 +166,33 @@ try {
   r = await run(["post", "Bad ext", `--image=${pdf}`, "--force"]);
   assert.equal(r.code, 1); assert.match(r.err, /png, jpg or gif/);
   step("document post; mixed and invalid attachments are rejected");
+
+  // A video a little over one 4 MiB part, so the upload has to be split in two.
+  const mp4 = path.join(home, "clip.mp4"); fs.writeFileSync(mp4, Buffer.alloc(4194304 + 1000, 7));
+  const callsBefore = calls.length;
+  r = await run(["post", "Video", `--video=${mp4}`, "--video-title=My clip", "--force"], { e: { QUILLPOST_VIDEO_POLL_MS: "10" } });
+  assert.equal(r.code, 0, r.err);
+  const vcalls = calls.slice(callsBefore);
+  assert.equal(vcalls.find((c) => c.search === "?action=initializeUpload").body.initializeUploadRequest.fileSizeBytes, 4194304 + 1000);
+  assert.deepEqual(vcalls.filter((c) => c.method === "PUT" && c.path.startsWith("/upload/v")).map((c) => c.bytes), [4194304, 1000], "video split into 4 MiB parts");
+  const partIds = vcalls.filter((c) => c.method === "PUT").map((c) => `tag-${c.path.split("/").pop()}`);
+  assert.deepEqual(vcalls.find((c) => c.search === "?action=finalizeUpload").body.finalizeUploadRequest, { video: last().content.media.id, uploadToken: "tkn", uploadedPartIds: partIds });
+  assert.match(last().content.media.id, /^urn:li:video:/); assert.equal(last().content.media.title, "My clip");
+  assert.ok(videoPolls >= 2, "waits until LinkedIn has processed the video");
+  assert.ok(!JSON.parse(r.out).warnings.some((w) => /processing/.test(w)));
+  videoPolls = -1e6; // never reaches AVAILABLE
+  r = await run(["post", "Slow video", `--video=${mp4}`, "--force"], { e: { QUILLPOST_VIDEO_POLL_MS: "10", QUILLPOST_VIDEO_WAIT_MS: "50" } });
+  videoPolls = 0;
+  assert.equal(r.code, 0, r.err); assert.ok(JSON.parse(r.out).warnings.some((w) => /still processing/.test(w)), "gives up waiting but still publishes, with a warning");
+  const publishedBefore = posts().length; videoFails = true;
+  r = await run(["post", "Bad video", `--video=${mp4}`, "--force"], { e: { QUILLPOST_VIDEO_POLL_MS: "10" } });
+  videoFails = false;
+  assert.equal(r.code, 1); assert.match(r.err, /bad codec/); assert.equal(posts().length, publishedBefore, "a video LinkedIn rejects is not posted");
+  const tiny = path.join(home, "tiny.mp4"); fs.writeFileSync(tiny, "x");
+  r = await run(["post", "Tiny", `--video=${tiny}`, "--force"]); assert.equal(r.code, 1); assert.match(r.err, /under 75 KB/);
+  r = await run(["post", "Not mp4", `--video=${pdf}`, "--force"]); assert.equal(r.code, 1); assert.match(r.err, /must be an mp4/);
+  r = await run(["post", "Mixed", `--video=${mp4}`, `--image=${png}`, "--force"]); assert.equal(r.code, 1); assert.match(r.err, /only one of/);
+  step("video post: split into parts, ETags finalized, waits for processing, rejects bad files");
 
   const hist = (await run(["posts"])).out;
   assert.match(hist, /urn|linkedin\.com\/feed\/update\/urn:li:share:/);
