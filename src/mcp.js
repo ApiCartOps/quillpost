@@ -27,7 +27,7 @@ const wrap = (fn) => async (args) => {
 const camel = (a) => ({
   text: a.text, style: a.style, hook: a.hook, intro: a.intro, items: a.items, takeaway: a.takeaway, cta: a.cta, tags: a.tags,
   plain: a.plain, visibility: a.visibility, firstComment: a.first_comment, force: a.force,
-  link: a.link, images: a.images, document: a.document,
+  link: a.link, images: a.images, document: a.document, video: a.video,
 });
 
 const specShape = {
@@ -45,6 +45,7 @@ const specShape = {
   link: z.object({ url: z.string(), title: z.string().optional(), description: z.string().optional() }).optional().describe("Share a link with a preview card"),
   images: z.array(z.object({ path: z.string(), alt: z.string().optional() })).optional().describe("Local image files (png/jpg/gif), 1 to 20"),
   document: z.object({ path: z.string(), title: z.string().optional() }).optional().describe("Local pdf/ppt/doc file shown as a carousel"),
+  video: z.object({ path: z.string(), title: z.string().optional() }).optional().describe("Local MP4 video, 75 KB to 500 MB and 3 seconds to 30 minutes. Uploaded when the post is published, so it can take a while"),
   force: z.boolean().optional().describe("Publish despite markdown errors (hard errors still block). Only if the user explicitly asks."),
 };
 const approved = z.boolean().default(false).describe("Set true only after the user has approved this exact action in chat");

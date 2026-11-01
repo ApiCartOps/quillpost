@@ -5,6 +5,8 @@ All notable changes to this project are listed here. The format follows [Keep a 
 ## [Unreleased]
 
 ### Added
+- Video posts: `--video=PATH.mp4 [--video-title=]` on the CLI and a `video: { path, title }` field in the MCP tools. Uses LinkedIn's Videos API: a multipart upload in 4 MB parts, then a wait for processing. Covered by the offline test suite; not yet confirmed on a live account.
+- `quillpost-video` Claude Code skill and `/quillpost-video` command for posting a video with approval.
 - Skill: bundled image renderers in `tools/`. `make_card.py` makes a 1200x627 PNG card, or an animated GIF with `--gif` or `--flashy`. `make_explainer.py` makes a short animated explainer of how AI video is generated, followed by the flashy card. They need Python 3 and Pillow.
 - Skill: guidance for checking GIF frames, GIF size limits and alt text for animated images.
 

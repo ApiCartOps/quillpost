@@ -2,7 +2,7 @@
 
 <h1 align="center">Quillpost</h1>
 
-<p align="center"><b>Write, check and publish LinkedIn posts from your terminal or AI agent.</b><br>Seven post styles, built-in checks, images, documents, drafts and a schedule, on LinkedIn's official API.</p>
+<p align="center"><b>Write, check and publish LinkedIn posts from your terminal or AI agent.</b><br>Seven post styles, built-in checks, images, documents, video, drafts and a schedule, on LinkedIn's official API.</p>
 
 <p align="center"><img alt="license" src="https://img.shields.io/badge/license-MIT-2dd4bf"> <img alt="node" src="https://img.shields.io/badge/node-%3E%3D20-2dd4bf"> <img alt="MCP" src="https://img.shields.io/badge/MCP-stdio-2dd4bf"> <img alt="API" src="https://img.shields.io/badge/LinkedIn-official%20API-2dd4bf"></p>
 
@@ -87,10 +87,11 @@ Already have text from somewhere else? Skip styles: `quillpost post --text-file=
 quillpost post "New release is out" --link=https://example.com/release --link-title="Release notes"
 quillpost post --text-file=post.txt --image=chart.png --alt="Chart of weekly signups"
 quillpost post --text-file=post.txt --document=deck.pdf --doc-title="Q3 review"
+quillpost post --text-file=post.txt --video=demo.mp4 --video-title="Demo of the new export"
 quillpost post --text-file=post.txt --comment="Sources: https://example.com/a"
 ```
 
-Images (1 to 20), a PDF or Office document as a swipeable carousel, and link preview cards are covered in [Rich posts](docs/rich-posts.md).
+Images (1 to 20), a PDF or Office document as a swipeable carousel, one MP4 video, and link preview cards are covered in [Rich posts](docs/rich-posts.md).
 
 > **The first comment needs partner access.** LinkedIn restricts commenting through its API to approved partners, so on a self-serve app `--comment` is refused with a 403. The post still publishes, and Quillpost prints the comment text so you can paste it yourself.
 
